@@ -32,7 +32,7 @@ namespace BackupChecker
             fileName = folderPath + @"\" + fileName;
 
             string header = buildString(fileNames, "Site");
-            System.IO.File.WriteAllText(fileName, header);
+            File.WriteAllText(fileName, header);
 
             foreach (string name in directoryNames)
             {
@@ -60,6 +60,7 @@ namespace BackupChecker
                     }
 
                 }
+                
 
             }
 
@@ -78,17 +79,25 @@ namespace BackupChecker
             foreach (string entry in entries)
             {
 
-                fileName = Path.GetFileNameWithoutExtension(entry);
-                getDate = fileName.Split('_');
+                try
+                {
+                    fileName = Path.GetFileNameWithoutExtension(entry);
+                
+                    getDate = fileName.Split('_');
 
-                count = getDate.Count<string>();
+                    count = getDate.Count<string>();
 
-                date = getDate[count - 1];
-                date = date.Substring(0, 4) + "/" + date.Substring(4, 2) + "/" + date.Substring(6, 2);
-
-                latestDate[i] = Convert.ToDateTime(date);
-                iIndex = Array.IndexOf(latestDate, latestDate.Max());
-
+                    date = getDate[count - 1];
+                    date = date.Substring(0, 4) + "/" + date.Substring(4, 2) + "/" + date.Substring(6, 2);
+                
+                    latestDate[i] = Convert.ToDateTime(date);
+                    iIndex = Array.IndexOf(latestDate, latestDate.Max()); 
+                }
+                catch
+                {
+                    continue;
+                }
+                
                 i++;
             }
 
