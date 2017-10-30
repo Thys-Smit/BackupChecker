@@ -16,7 +16,6 @@ namespace BackupChecker
         static string folderPath = ConfigurationManager.AppSettings["folderPath"];
         static string fileName = ConfigurationManager.AppSettings["fileName"];
         static string[] directoryNames = ConfigurationManager.AppSettings["directoryNames"].Split(',');
-        static string[] fileNames = ConfigurationManager.AppSettings["searchNames"].Split(',');
         static string[] entries;
 
         #endregion
@@ -31,17 +30,18 @@ namespace BackupChecker
             List<string> latestEntry = new List<string>();
             fileName = folderPath + @"\" + fileName;
 
-            string header = buildString(fileNames, "Site");
-            File.WriteAllText(fileName, header);
+            File.WriteAllText(fileName, "");
 
             foreach (string name in directoryNames)
             {
+                string[] fileNames = ConfigurationManager.AppSettings[name].Split(',');
+
                 latestEntry.Clear();
                 foreach (string file in fileNames)
                 {
                     try
                     {
-                        entries = Directory.GetFileSystemEntries(folderPath + @"\" + name, "*" + file + "*", SearchOption.TopDirectoryOnly);
+                        entries = Directory.GetFileSystemEntries(folderPath + @"\" + name, file + "*", SearchOption.TopDirectoryOnly);
                         latestEntry.Add(getLatestBackup(entries));
                     }
                     catch
@@ -53,14 +53,15 @@ namespace BackupChecker
 
                 if (entries != null)
                 {
+                    string header = buildString(fileNames, "Site");
                     string values = buildString(entries, name, latestEntry);
                     using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName, true))
                     {
+                        file.WriteLine(header);
                         file.WriteLine(values);
                     }
 
                 }
-                
 
             }
 
