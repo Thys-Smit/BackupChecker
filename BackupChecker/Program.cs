@@ -117,7 +117,7 @@ namespace BackupChecker
                 {
                     sb.Append("," + str);
                 }
-                sb.Append(Environment.NewLine);
+                //sb.Append(Environment.NewLine);
             }
             else
             {
