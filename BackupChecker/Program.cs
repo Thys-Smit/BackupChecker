@@ -7,6 +7,7 @@ using System.IO;
 using System.Configuration;
 using System.Text.RegularExpressions;
 
+
 namespace BackupChecker
 {
     class Program
@@ -38,27 +39,34 @@ namespace BackupChecker
                 string[] fileNames = ConfigurationManager.AppSettings[name].Split(',');
 
                 latestEntry.Clear();
-                foreach (string file in fileNames)
-                {
+                //foreach (string file in fileNames)
+                //{
                     try
                     {
                         //entries = Directory.GetFileSystemEntries(folderPath + @"\" + name, file + "*", SearchOption.TopDirectoryOnly);
-                        entries = Directory.GetFileSystemEntries(folderPath + @"\" + name,"*.rar", SearchOption.TopDirectoryOnly);
+                        entries = Directory.GetFileSystemEntries(folderPath + @"\" + name,"*", SearchOption.TopDirectoryOnly);
                         
                         
                         foreach (string entry in entries)
                         {
-                           bool isMatch = Regex.IsMatch(entry, file);
-                           if (isMatch) latestEntry.Add(getLatestBackup(entries));
+                            foreach (string file in fileNames)
+                            {
+                                bool isMatch = Regex.IsMatch(entry, file);
+
+                                if (isMatch) latestEntry.Add(getLatestBackup(entries));
+                            }
+                           
                         }
                         
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Console.WriteLine(ex.Message);
+                        Console.ReadLine();
                         entries = null;
                         continue;
                     }
-                }
+                //}
 
                 if (entries != null)
                 {
