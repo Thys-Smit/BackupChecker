@@ -30,34 +30,33 @@ namespace BackupChecker
         public static void getFiles()
         {
             List<string> latestEntry = new List<string>();
+            List<DateTime> entryList = new List<DateTime>();
             fileName = folderPath + @"\" + fileName;
 
             File.WriteAllText(fileName, "");
             
             foreach (string name in directoryNames)
             {
-                string[] fileNames = ConfigurationManager.AppSettings[name].Split(',');
+                string[] fileRegex = ConfigurationManager.AppSettings[name].Split(',');
 
                 latestEntry.Clear();
                 //foreach (string file in fileNames)
                 //{
                     try
                     {
-                        //entries = Directory.GetFileSystemEntries(folderPath + @"\" + name, file + "*", SearchOption.TopDirectoryOnly);
-                        entries = Directory.GetFileSystemEntries(folderPath + @"\" + name,"*", SearchOption.TopDirectoryOnly);
-                        
-                        
-                        foreach (string entry in entries)
+                        entries = Directory.GetFileSystemEntries(folderPath + @"\" + name,"*.rar", SearchOption.TopDirectoryOnly);
+                        foreach (string file in fileRegex)
                         {
-                            foreach (string file in fileNames)
+                            foreach (string entry in entries)
                             {
-                                bool isMatch = Regex.IsMatch(entry, file);
+                                bool isMatch = Regex.IsMatch(Path.GetFileNameWithoutExtension(entry), file);
 
-                                if (isMatch) latestEntry.Add(getLatestBackup(entries));
+                                if (isMatch) entryList.Add(File.GetCreationTime(entry));
                             }
-                           
+
+                            if (entryList.Count > 0) latestEntry.Add(entryList.Max().ToShortDateString());
                         }
-                        
+
                     }
                     catch (Exception ex)
                     {
@@ -70,7 +69,7 @@ namespace BackupChecker
 
                 if (entries != null)
                 {
-                    string header = buildString(fileNames, "Site");
+                    string header = buildString(fileRegex, "Site");
                     string values = buildString(entries, name, latestEntry);
                     using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName, true))
                     {
@@ -84,6 +83,7 @@ namespace BackupChecker
 
         }
 
+        
         public static string getLatestBackup(string[] entries)
         {
             DateTime[] latestDate = new DateTime[entries.Count()];
