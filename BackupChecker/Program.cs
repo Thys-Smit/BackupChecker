@@ -44,9 +44,11 @@ namespace BackupChecker
                 //{
                     try
                     {
-                        entries = Directory.GetFileSystemEntries(folderPath + @"\" + name,"*.rar", SearchOption.TopDirectoryOnly);
+                        entries = Directory.GetFileSystemEntries(folderPath + @"\" + name,"*", SearchOption.TopDirectoryOnly);
                         foreach (string file in fileRegex)
                         {
+                            entryList.Clear();
+
                             foreach (string entry in entries)
                             {
                                 bool isMatch = Regex.IsMatch(Path.GetFileNameWithoutExtension(entry), file);
